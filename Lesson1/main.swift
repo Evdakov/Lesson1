@@ -1,13 +1,13 @@
 //
 //  main.swift
-//  Lesson1
+//  Swift Lessons
 //
 //  Created by  max on 09.03.2021.
 //
 
 import Foundation
 
-// Задание - комплексные типы данных
+// Урок 4 - Введение в ООП
 enum EngineStatus {
     case started, stoped
 }
@@ -16,107 +16,142 @@ enum WindowsStatus {
     case opened, closed
 }
 
-struct SportCar {
-    let brandName: String
-    let modelName: String
+enum Actions {
+    case openWindow, closeWindow, startEngine, stopEngine, installNOS, useNOS, completelyLoad, unloadBaggage
+}
+
+class Car {
+    let name: String
     let year: Int
     let baggageVolume: Double
-    var engineStatus: EngineStatus
     var windowStatus: WindowsStatus
+    var engineStatus: EngineStatus
     var filledVolume: Double
-    var trunkIsFull: Bool
     
-    mutating func changeEngineStatus(to value: EngineStatus) {
-        self.engineStatus = value
-    }
     
-    mutating func addBaggageToTrunk(adding value: Double) {
-        let newValue = self.filledVolume + value
-        
-        if newValue <= self.baggageVolume {
-            self.filledVolume = newValue
-        } else {
-            print("Такой объем не влезет в машину")
-        }
-        
-        self.trunkIsFull = self.filledVolume == self.baggageVolume
+    init(name: String, year: Int, baggageVolume: Double, windowStatus: WindowsStatus = .closed, engineStatus: EngineStatus = .stoped, filledVolume: Double = 0) {
+        self.name = name
+        self.year = year
+        self.baggageVolume = baggageVolume
+        self.windowStatus = windowStatus
+        self.engineStatus = engineStatus
+        self.filledVolume = filledVolume
     }
     
     func printInfo() {
-        print("_____________")
-        print("Автомобиль \(self.brandName) \(self.modelName)")
-        print("Год выпуска \(self.year)")
-        print("Двигатель \(self.engineStatus == .started ? "запущен" : "выключен")")
-        print("Окна \(self.windowStatus == .opened ? "открыты" : "закрыты")")
-        print("Объем багажника \(self.baggageVolume) литров")
         
-        if (self.filledVolume > 0) {
-            let filledPercents = Double(round(self.filledVolume * 100 / self.baggageVolume * 100) / 100)
-            print("Багажник заполнен на \(filledPercents)%")
-        } else {
-            print("Багажник пуст")
+    }
+    
+    func doAction(action: Actions) {
+        switch action {
+        case .closeWindow:
+            self.windowStatus = .closed
+        case .openWindow:
+            self.windowStatus = .opened
+        case .stopEngine:
+            self.engineStatus = .stoped
+        case .startEngine:
+            self.engineStatus = .started
+        default: break
         }
-        
     }
 }
 
-struct TrunkCar {
-    let brandName: String
-    let modelName: String
-    let year: Int
-    let baggageVolume: Double
-    var engineStatus: EngineStatus
-    var windowStatus: WindowsStatus
-    var filledVolume: Double
-    var trunkIsFull: Bool
+class SportCar: Car {
+    let acceleration100: Double
+    let speedMax: Int
+    var lapTime: Double
+    var isNOSInstalled: Bool
     
-    mutating func changeEngineStatus(to value: EngineStatus) {
-        self.engineStatus = value
+    init(acceleration100: Double, speedMax: Int, lapTime: Double, isNOSInstalled: Bool, name: String, year: Int, baggageVolume: Double, windowStatus: WindowsStatus = .closed, engineStatus: EngineStatus = .stoped, filledVolume: Double = 0) {
+        self.acceleration100 = acceleration100
+        self.speedMax = speedMax
+        self.lapTime = lapTime
+        self.isNOSInstalled = isNOSInstalled
+        
+        super.init(name: name, year: year, baggageVolume: baggageVolume, windowStatus: windowStatus, engineStatus: engineStatus, filledVolume: filledVolume)
     }
     
-    mutating func addBaggageToTrunk(adding value: Double) {
-        let newValue = self.filledVolume + value
-        
-        if newValue <= self.baggageVolume {
-            self.filledVolume = newValue
-        } else {
-            print("Такой объем не влезет в кузов")
+    override func doAction(action: Actions) {
+        switch action {
+        case .installNOS:
+            self.isNOSInstalled = true
+        case .useNOS:
+            self.isNOSInstalled = false
+        default:
+            super.doAction(action: action)
         }
-        
-        self.trunkIsFull = self.filledVolume == self.baggageVolume
     }
     
-    func printInfo() {
-        print("_____________")
-        print("Грузовой автомобиль \(self.brandName) \(self.modelName)")
-        print("Год выпуска \(self.year)")
-        print("Двигатель \(self.engineStatus == .started ? "запущен" : "выключен")")
-        print("Окна \(self.windowStatus == .opened ? "открыты" : "закрыты")")
-        print("Объем кузова \(self.baggageVolume) литров")
-        
-        if (self.filledVolume > 0) {
-            let filledPercents = Double(round(self.filledVolume * 100 / self.baggageVolume * 100) / 100)
-            print("Кузов заполнен на \(filledPercents)%")
-        } else {
-            print("Кузов пуст")
-        }
-        
+    override func printInfo() {
+        print("""
+            ______________________________
+            Спортивный автомобиль \(name)
+            Год выпуска \(year)
+            Разгон до 100км/ч \(acceleration100) сек.
+            Закись азота \(isNOSInstalled ? "установлена" : "использована")
+            Лучшее время прохождения круга \(lapTime) сек.
+            Двигатель \(engineStatus == .started ? "запущен" : "заглушен")
+            Окна \(windowStatus == .opened ? "открыты" : "закрыты")
+            """)
     }
 }
 
+class TrunkCar: Car {
+    let fuelTankSize: Double
+    let sleepPlacesCount: Int
+    
+    init(fuelTankSize: Double, sleepPlacesCount: Int, name: String, year: Int, baggageVolume: Double, windowStatus: WindowsStatus = .closed, engineStatus: EngineStatus = .stoped, filledVolume: Double = 0) {
+        self.fuelTankSize = fuelTankSize
+        self.sleepPlacesCount = sleepPlacesCount
+        
+        super.init(name: name, year: year, baggageVolume: baggageVolume, windowStatus: windowStatus, engineStatus: engineStatus, filledVolume: filledVolume)
+    }
+    
+    override func doAction(action: Actions) {
+        switch action {
+        case .completelyLoad:
+            self.filledVolume = self.baggageVolume
+        case .unloadBaggage:
+            self.filledVolume = 0
+        default:
+            super.doAction(action: action)
+        }
+    }
+    
+    override func printInfo() {
+        print("""
+            ______________________________
+            Грузовой автомобиль \(name)
+            Год выпуска \(year)
+            Размер бензобака \(fuelTankSize) литров
+            Количество спальных мест \(sleepPlacesCount)
+            Двигатель \(engineStatus == .started ? "запущен" : "заглушен")
+            Окна \(windowStatus == .opened ? "открыты" : "закрыты")
+            Объем кузова \(baggageVolume) литров
+            Объем груза \(filledVolume) литров
+            """)
+    }
+}
 
-var sportCar = SportCar(brandName: "Porsche", modelName: "Panamera", year: 2019, baggageVolume: 335, engineStatus: .stoped, windowStatus: .closed, filledVolume: 0, trunkIsFull: false)
-var sportCarF = SportCar(brandName: "Ferrari", modelName: "488", year: 2020, baggageVolume: 230, engineStatus: .stoped, windowStatus: .opened, filledVolume: 0, trunkIsFull: false)
+let sportCar = SportCar(acceleration100: 5.7, speedMax: 248, lapTime: 59, isNOSInstalled: true, name: "Nissan 350Z", year: 2003, baggageVolume: 300)
+let sportCarOKonnor = SportCar(acceleration100: 4.7, speedMax: 320, lapTime: 48, isNOSInstalled: true, name: "Nissan Skyline GT-R", year: 1999, baggageVolume: 330)
 
-var trunkCar = TrunkCar(brandName: "Volvo", modelName: "FH16", year: 2020, baggageVolume: 60000, engineStatus: .stoped, windowStatus: .closed, filledVolume: 0, trunkIsFull: false)
-var trunkCar2 = TrunkCar(brandName: "MAN", modelName: "TGX", year: 2018, baggageVolume: 58000, engineStatus: .stoped, windowStatus: .closed, filledVolume: 0, trunkIsFull: false)
+let trunkCar = TrunkCar(fuelTankSize: 700, sleepPlacesCount: 2, name: "Volvo FH16", year: 2020, baggageVolume: 60000)
+let trunkMan = TrunkCar(fuelTankSize: 1340, sleepPlacesCount: 2, name: "MAN TGX", year: 2020, baggageVolume: 58000)
 
-sportCar.addBaggageToTrunk(adding: 100)
-sportCarF.changeEngineStatus(to: .started)
+sportCarOKonnor.engineStatus = .started
+sportCarOKonnor.doAction(action: .openWindow)
+sportCarOKonnor.doAction(action: .useNOS)
+
+trunkCar.doAction(action: .openWindow)
+trunkCar.filledVolume = 2000
+
+trunkMan.doAction(action: .startEngine)
+trunkMan.doAction(action: .completelyLoad)
+
 sportCar.printInfo()
-sportCarF.printInfo()
+sportCarOKonnor.printInfo()
 
-trunkCar2.windowStatus = .opened
-trunkCar2.addBaggageToTrunk(adding: 8000)
 trunkCar.printInfo()
-trunkCar2.printInfo()
+trunkMan.printInfo()
