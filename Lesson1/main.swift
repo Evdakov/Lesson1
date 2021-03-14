@@ -8,56 +8,54 @@
 import Foundation
 
 // Задание 1
-
-let example = "3(x^2) + 11x + 6 = 0"
-
-let a : Double = 3
-let b : Double = 11
-let c : Double = 6
-
-var d : Double = pow(b, 2) - 4 * a * c
-
-print("Задание 1")
-print("Решаем уравнение: \(example)")
-
-if d > 0 {
-    var x1 : Double = (-b + sqrt(d)) / (2 * a)
-    var x2 : Double = (-b - sqrt(d)) / (2 * a)
-    
-    print("Ответ 1: \(x1)")
-    print("Ответ 2: \(x2)")
-} else if d == 0 {
-    var x : Double = (-b + sqrt(d)) / (2 * a)
-    
-    print("Ответ: \(x)")
-} else {
-    print("Ответ: решений нет")
+func checkEvenNumber(num: Int) -> Bool {
+    num % 2 == 0
 }
 
-
 // Задание 2
-
-let ca : Double = 6
-let cb : Double = 8
-
-var hipo : Double = sqrt(pow(ca, 2) + pow(cb, 2))
-var per : Double = ca + cb + hipo
-var sq : Double = ca * cb / 2
-
-print("Задание 2")
-print("Катеты треугольника равны \(ca) и \(cb)")
-print("Гипотенуза треугольника равна \(hipo)")
-print("Периметр треугольника равен \(per)")
-print("Площадь треугольника равна \(sq)")
-
+func isMultipleOfThree(num: Int) -> Bool {
+    num % 3 == 0
+}
 
 // Задание 3
+var newArr: [Int] = []
 
-let s0 : Double = 10000
-let percents : Double = 6.5
-let n : Double = 5
+for i in 1...100 {
+    newArr.append(i)
+}
 
-var s : Double = Double(round(s0 * pow((1 + percents / 100), n) * 100) / 100)
-print("Задание 3")
-print("Сумма через \(n) лет: \(s)")
+// Задание 4
+for value in newArr {
+    if checkEvenNumber(num: value) || isMultipleOfThree(num: value) {
+        if let key = newArr.lastIndex(of: value) {
+            newArr.remove(at: key)
+        }
+    }
+}
+print("Массив после удаления чисел, делящихся на 2 и на 3 без остатка:")
+print(newArr)
+
+// Задание 5
+var fibonachiArr: [Int] = [0]
+
+func addItem(_ localArr: inout [Int]) {
+    if localArr.count == 0 {
+        localArr.append(0)
+    } else if localArr.count == 1 {
+        localArr.append(1)
+    } else {
+        let newValue = localArr[localArr.count - 1] + localArr[localArr.count - 2]
+        localArr.append(newValue)
+    }
+    
+}
+
+for _ in 1...49 {
+    addItem(&fibonachiArr)
+}
+print("\nМассив с числами Фибоначчи:")
+print(fibonachiArr)
+
+
+// Задание 6
 
