@@ -7,55 +7,116 @@
 
 import Foundation
 
-// Задание 1
-func checkEvenNumber(num: Int) -> Bool {
-    num % 2 == 0
+// Задание - комплексные типы данных
+enum EngineStatus {
+    case started, stoped
 }
 
-// Задание 2
-func isMultipleOfThree(num: Int) -> Bool {
-    num % 3 == 0
+enum WindowsStatus {
+    case opened, closed
 }
 
-// Задание 3
-var newArr: [Int] = []
-
-for i in 1...100 {
-    newArr.append(i)
-}
-
-// Задание 4
-for value in newArr {
-    if checkEvenNumber(num: value) || isMultipleOfThree(num: value) {
-        if let key = newArr.lastIndex(of: value) {
-            newArr.remove(at: key)
-        }
-    }
-}
-print("Массив после удаления чисел, делящихся на 2 и на 3 без остатка:")
-print(newArr)
-
-// Задание 5
-var fibonachiArr: [Int] = [0]
-
-func addItem(_ localArr: inout [Int]) {
-    if localArr.count == 0 {
-        localArr.append(0)
-    } else if localArr.count == 1 {
-        localArr.append(1)
-    } else {
-        let newValue = localArr[localArr.count - 1] + localArr[localArr.count - 2]
-        localArr.append(newValue)
+struct SportCar {
+    let brandName: String
+    let modelName: String
+    let year: Int
+    let baggageVolume: Double
+    var engineStatus: EngineStatus
+    var windowStatus: WindowsStatus
+    var filledVolume: Double
+    var trunkIsFull: Bool
+    
+    mutating func changeEngineStatus(to value: EngineStatus) {
+        self.engineStatus = value
     }
     
+    mutating func addBaggageToTrunk(adding value: Double) {
+        let newValue = self.filledVolume + value
+        
+        if newValue <= self.baggageVolume {
+            self.filledVolume = newValue
+        } else {
+            print("Такой объем не влезет в машину")
+        }
+        
+        self.trunkIsFull = self.filledVolume == self.baggageVolume
+    }
+    
+    func printInfo() {
+        print("_____________")
+        print("Автомобиль \(self.brandName) \(self.modelName)")
+        print("Год выпуска \(self.year)")
+        print("Двигатель \(self.engineStatus == .started ? "запущен" : "выключен")")
+        print("Окна \(self.windowStatus == .opened ? "открыты" : "закрыты")")
+        print("Объем багажника \(self.baggageVolume) литров")
+        
+        if (self.filledVolume > 0) {
+            let filledPercents = Double(round(self.filledVolume * 100 / self.baggageVolume * 100) / 100)
+            print("Багажник заполнен на \(filledPercents)%")
+        } else {
+            print("Багажник пуст")
+        }
+        
+    }
 }
 
-for _ in 1...49 {
-    addItem(&fibonachiArr)
+struct TrunkCar {
+    let brandName: String
+    let modelName: String
+    let year: Int
+    let baggageVolume: Double
+    var engineStatus: EngineStatus
+    var windowStatus: WindowsStatus
+    var filledVolume: Double
+    var trunkIsFull: Bool
+    
+    mutating func changeEngineStatus(to value: EngineStatus) {
+        self.engineStatus = value
+    }
+    
+    mutating func addBaggageToTrunk(adding value: Double) {
+        let newValue = self.filledVolume + value
+        
+        if newValue <= self.baggageVolume {
+            self.filledVolume = newValue
+        } else {
+            print("Такой объем не влезет в кузов")
+        }
+        
+        self.trunkIsFull = self.filledVolume == self.baggageVolume
+    }
+    
+    func printInfo() {
+        print("_____________")
+        print("Грузовой автомобиль \(self.brandName) \(self.modelName)")
+        print("Год выпуска \(self.year)")
+        print("Двигатель \(self.engineStatus == .started ? "запущен" : "выключен")")
+        print("Окна \(self.windowStatus == .opened ? "открыты" : "закрыты")")
+        print("Объем кузова \(self.baggageVolume) литров")
+        
+        if (self.filledVolume > 0) {
+            let filledPercents = Double(round(self.filledVolume * 100 / self.baggageVolume * 100) / 100)
+            print("Кузов заполнен на \(filledPercents)%")
+        } else {
+            print("Кузов пуст")
+        }
+        
+    }
 }
-print("\nМассив с числами Фибоначчи:")
-print(fibonachiArr)
 
 
-// Задание 6
+var sportCar = SportCar(brandName: "Porsche", modelName: "Panamera", year: 2019, baggageVolume: 335, engineStatus: .stoped, windowStatus: .closed, filledVolume: 0, trunkIsFull: false)
+var sportCarF = SportCar(brandName: "Ferrari", modelName: "488", year: 2020, baggageVolume: 230, engineStatus: .stoped, windowStatus: .opened, filledVolume: 0, trunkIsFull: false)
 
+var trunkCar = TrunkCar(brandName: "Volvo", modelName: "FH16", year: 2020, baggageVolume: 60000, engineStatus: .stoped, windowStatus: .closed, filledVolume: 0, trunkIsFull: false)
+var trunkCar2 = TrunkCar(brandName: "MAN", modelName: "TGX", year: 2018, baggageVolume: 58000, engineStatus: .stoped, windowStatus: .closed, filledVolume: 0, trunkIsFull: false)
+
+sportCar.addBaggageToTrunk(adding: 100)
+sportCarF.changeEngineStatus(to: .started)
+sportCar.printInfo()
+sportCarF.printInfo()
+
+trunkCar2.windowStatus = .opened
+trunkCar2.addBaggageToTrunk(adding: 8000)
+trunkCar.printInfo()
+trunkCar2.printInfo()
