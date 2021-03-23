@@ -7,151 +7,122 @@
 
 import Foundation
 
-// Урок 4 - Введение в ООП
-enum EngineStatus {
-    case started, stoped
+// MARK: - Lesson 5
+
+enum EngineStatus: String {
+    case started = "запущен", stoped = "выключен"
 }
 
-enum WindowsStatus {
-    case opened, closed
+enum WindowStatus: String {
+    case opened = "открыты", closed = "закрыты"
 }
 
-enum Actions {
-    case openWindow, closeWindow, startEngine, stopEngine, installNOS, useNOS, completelyLoad, unloadBaggage
-}
-
-class Car {
-    let name: String
-    let year: Int
-    let baggageVolume: Double
-    var windowStatus: WindowsStatus
-    var engineStatus: EngineStatus
-    var filledVolume: Double
+protocol Car: class {
+    var name: String { get }
+    var year: Int { get }
     
+    var windowStatus: WindowStatus { get set }
+    var engineStatus: EngineStatus { get set }
     
-    init(name: String, year: Int, baggageVolume: Double, windowStatus: WindowsStatus = .closed, engineStatus: EngineStatus = .stoped, filledVolume: Double = 0) {
-        self.name = name
-        self.year = year
-        self.baggageVolume = baggageVolume
-        self.windowStatus = windowStatus
-        self.engineStatus = engineStatus
-        self.filledVolume = filledVolume
+    func openWindows()
+    func closeWindows()
+    func changeEngineStatus(status: EngineStatus)
+}
+
+extension Car {
+    func openWindows() {
+        self.windowStatus = .opened
     }
     
-    func printInfo() {
-        
+    func closeWindows() {
+        self.windowStatus = .closed
     }
     
-    func doAction(action: Actions) {
-        switch action {
-        case .closeWindow:
-            self.windowStatus = .closed
-        case .openWindow:
-            self.windowStatus = .opened
-        case .stopEngine:
-            self.engineStatus = .stoped
-        case .startEngine:
-            self.engineStatus = .started
-        default: break
-        }
+    func changeEngineStatus(status: EngineStatus) {
+        self.engineStatus = status
     }
 }
 
 class SportCar: Car {
-    let acceleration100: Double
-    let speedMax: Int
-    var lapTime: Double
+    var name: String
+    var year: Int
+    var windowStatus: WindowStatus
+    var engineStatus: EngineStatus
     var isNOSInstalled: Bool
     
-    init(acceleration100: Double, speedMax: Int, lapTime: Double, isNOSInstalled: Bool, name: String, year: Int, baggageVolume: Double, windowStatus: WindowsStatus = .closed, engineStatus: EngineStatus = .stoped, filledVolume: Double = 0) {
-        self.acceleration100 = acceleration100
-        self.speedMax = speedMax
-        self.lapTime = lapTime
+    init(name: String, year: Int, isNOSInstalled: Bool = false, windowStatus: WindowStatus = .closed, engineStatus: EngineStatus = .stoped) {
+        self.name = name
+        self.year = year
+        self.windowStatus = windowStatus
+        self.engineStatus = engineStatus
         self.isNOSInstalled = isNOSInstalled
-        
-        super.init(name: name, year: year, baggageVolume: baggageVolume, windowStatus: windowStatus, engineStatus: engineStatus, filledVolume: filledVolume)
     }
     
-    override func doAction(action: Actions) {
-        switch action {
-        case .installNOS:
-            self.isNOSInstalled = true
-        case .useNOS:
-            self.isNOSInstalled = false
-        default:
-            super.doAction(action: action)
-        }
+    func installNOS() {
+        self.isNOSInstalled = true
     }
     
-    override func printInfo() {
-        print("""
-            ______________________________
-            Спортивный автомобиль \(name)
-            Год выпуска \(year)
-            Разгон до 100км/ч \(acceleration100) сек.
-            Закись азота \(isNOSInstalled ? "установлена" : "использована")
-            Лучшее время прохождения круга \(lapTime) сек.
-            Двигатель \(engineStatus == .started ? "запущен" : "заглушен")
-            Окна \(windowStatus == .opened ? "открыты" : "закрыты")
-            """)
+    func useNOS() {
+        self.isNOSInstalled = false
+    }
+}
+
+extension SportCar: CustomStringConvertible {
+    var description: String {
+        return String("""
+                _______________________
+                Спортивный автомобиль \(self.name) \(self.year) года
+                Окна \(self.windowStatus.rawValue)
+                Двигатель \(self.engineStatus.rawValue)
+                NOS \(self.isNOSInstalled ? "установлен" : "использован")
+                """)
     }
 }
 
 class TrunkCar: Car {
-    let fuelTankSize: Double
-    let sleepPlacesCount: Int
+    var name: String
+    var year: Int
+    var windowStatus: WindowStatus
+    var engineStatus: EngineStatus
+    var sleepPlacesCount: Int
+    var fuelTrankSize: Double
     
-    init(fuelTankSize: Double, sleepPlacesCount: Int, name: String, year: Int, baggageVolume: Double, windowStatus: WindowsStatus = .closed, engineStatus: EngineStatus = .stoped, filledVolume: Double = 0) {
-        self.fuelTankSize = fuelTankSize
+    init(name: String, year: Int, sleepPlacesCount: Int, fuelTrankSize: Double, windowStatus: WindowStatus = .closed, engineStatus: EngineStatus = .stoped) {
+        self.name = name
+        self.year = year
+        self.windowStatus = windowStatus
+        self.engineStatus = engineStatus
         self.sleepPlacesCount = sleepPlacesCount
-        
-        super.init(name: name, year: year, baggageVolume: baggageVolume, windowStatus: windowStatus, engineStatus: engineStatus, filledVolume: filledVolume)
-    }
-    
-    override func doAction(action: Actions) {
-        switch action {
-        case .completelyLoad:
-            self.filledVolume = self.baggageVolume
-        case .unloadBaggage:
-            self.filledVolume = 0
-        default:
-            super.doAction(action: action)
-        }
-    }
-    
-    override func printInfo() {
-        print("""
-            ______________________________
-            Грузовой автомобиль \(name)
-            Год выпуска \(year)
-            Размер бензобака \(fuelTankSize) литров
-            Количество спальных мест \(sleepPlacesCount)
-            Двигатель \(engineStatus == .started ? "запущен" : "заглушен")
-            Окна \(windowStatus == .opened ? "открыты" : "закрыты")
-            Объем кузова \(baggageVolume) литров
-            Объем груза \(filledVolume) литров
-            """)
+        self.fuelTrankSize = fuelTrankSize
     }
 }
 
-let sportCar = SportCar(acceleration100: 5.7, speedMax: 248, lapTime: 59, isNOSInstalled: true, name: "Nissan 350Z", year: 2003, baggageVolume: 300)
-let sportCarOKonnor = SportCar(acceleration100: 4.7, speedMax: 320, lapTime: 48, isNOSInstalled: true, name: "Nissan Skyline GT-R", year: 1999, baggageVolume: 330)
+extension TrunkCar: CustomStringConvertible {
+    var description: String {
+        return String("""
+                _______________________
+                Грузовой автомобиль \(self.name) \(self.year) года
+                Окна \(self.windowStatus.rawValue)
+                Двигатель \(self.engineStatus.rawValue)
+                Спальных мест \(self.sleepPlacesCount)
+                Объем топливных баков \(self.fuelTrankSize) литров
+                """)
+    }
+}
 
-let trunkCar = TrunkCar(fuelTankSize: 700, sleepPlacesCount: 2, name: "Volvo FH16", year: 2020, baggageVolume: 60000)
-let trunkMan = TrunkCar(fuelTankSize: 1340, sleepPlacesCount: 2, name: "MAN TGX", year: 2020, baggageVolume: 58000)
+let sportCar = SportCar(name: "Lamborghini Aventador", year: 2021)
+let sportCarOKonnor = SportCar(name: "Nissan Skyline GT-R", year: 1999)
 
-sportCarOKonnor.engineStatus = .started
-sportCarOKonnor.doAction(action: .openWindow)
-sportCarOKonnor.doAction(action: .useNOS)
+let trunkCar = TrunkCar(name: "Volvo FH16", year: 2020, sleepPlacesCount: 2, fuelTrankSize: 700)
+let trunkCarMan = TrunkCar(name: "MAN TGX", year: 2019, sleepPlacesCount: 2, fuelTrankSize: 1340)
 
-trunkCar.doAction(action: .openWindow)
-trunkCar.filledVolume = 2000
+sportCar.installNOS()
+sportCarOKonnor.openWindows()
 
-trunkMan.doAction(action: .startEngine)
-trunkMan.doAction(action: .completelyLoad)
+trunkCar.changeEngineStatus(status: .started)
+trunkCarMan.openWindows()
 
-sportCar.printInfo()
-sportCarOKonnor.printInfo()
-
-trunkCar.printInfo()
-trunkMan.printInfo()
+print(sportCar)
+print(sportCarOKonnor)
+print(trunkCar)
+print(trunkCarMan)
